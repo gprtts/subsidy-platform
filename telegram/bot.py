@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -14,9 +15,9 @@ from tg_bot.handlers import (
     set_region,
     set_industry,
     programs,
-    buy_pro,
     alerts_menu,
-    alerts_callback
+    alerts_callback,
+    upgrade_callback,
 )
 
 load_dotenv()
@@ -25,18 +26,17 @@ TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 app = ApplicationBuilder().token(TOKEN).build()
 
-# commands
 app.add_handler(CommandHandler("start", start))
 
-# text handlers
 app.add_handler(MessageHandler(filters.Regex("^(ИП|ООО|Самозанятый)$"), set_business))
 app.add_handler(MessageHandler(filters.Regex("^(Москва|МО)$"), set_region))
 app.add_handler(MessageHandler(filters.Regex("^(IT|Торговля|Услуги|Производство)$"), set_industry))
+
 app.add_handler(MessageHandler(filters.Regex("^📋 Программы$"), programs))
-app.add_handler(MessageHandler(filters.Regex("^🔔 Алерты$"), alerts_menu))
+app.add_handler(MessageHandler(filters.Regex("^🔔 Уведомления$"), alerts_menu))
+
 app.add_handler(CallbackQueryHandler(alerts_callback, pattern="^alerts_"))
-# callbacks
-app.add_handler(CallbackQueryHandler(buy_pro, pattern="^buy_pro$"))
+app.add_handler(CallbackQueryHandler(upgrade_callback, pattern="^upgrade_"))
 
 print("🤖 Bot started")
 app.run_polling()
